@@ -50,3 +50,6 @@ Run the migrations:
 ```bash
 docker-compose exec app php artisan migrate
 ```
+
+## Notes
+The PUT method needs to be POST with _method=PUT query parameter due to a bug in Laravel/Symfony.
