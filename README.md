@@ -5,26 +5,24 @@
 - Docker and docker-compose
 
 ```bash
-docker run --rm -u "$(id -u):$(id -g)" -v $(pwd):/opt -w /opt laravelsail/php82-composer:latest composer install --ignore-platform-reqs
 cp .env.example .env
 docker-compose up -d
 ```
 
 ```bash
- ./vendor/bin/sail artisan migrate
- ./vendor/bin/sail artisan storage:link
+docker-compose exec laravel php artisan migrate
 ```
 
 ## Running tests
 ```bash
 cp .env.example .env.testing
-./vendor/bin/sail artisan test
+docker-compose exec laravel php artisan test
 ```
 
 ## API docs:
 Generate API docs
 ```bash
-./vendor/bin/sail artisan l5-swagger:generate
+docker-compose exec laravel php artisan l5-swagger:generate
 ```
 Access it in: http://localhost/api/docs
 
@@ -36,7 +34,7 @@ This project's Docker image can be found at: https://hub.docker.com/r/tiagoa/joh
 ### Deployment instructions
 Clean the application
 ```bash
-./vendor/bin/sail artisan cache:clear
+docker-compose exec laravel php artisan cache:clear
 rm -rf vendor
 ```
 ```bash
