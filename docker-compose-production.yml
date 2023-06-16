@@ -1,0 +1,32 @@
+version: "3.7"
+services:
+  app:
+    image: <DOCKER_HUB_USERNAME>/john-task-list
+    restart: unless-stopped
+    networks:
+      - john-task-list
+    ports:
+      - '80:80'
+  pgsql:
+    image: 'postgres:13'
+    ports:
+      - '5432:5432'
+    environment:
+      PGPASSWORD: 'password'
+      POSTGRES_DB: 'laravel'
+      POSTGRES_USER: 'sail'
+      POSTGRES_PASSWORD: 'password'
+    volumes:
+      - 'pgsql:/var/lib/postgresql/data'
+    networks:
+      - john-task-list
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "laravel", "-U", "sail" ]
+      retries: 3
+      timeout: 5s
+networks:
+  john-task-list:
+    driver: bridge
+volumes:
+  pgsql:
+    driver: local

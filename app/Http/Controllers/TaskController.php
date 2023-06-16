@@ -58,7 +58,7 @@ class TaskController extends Controller
      *         @OA\Schema(
      *             type="integer",
      *             maximum=100,
-     *             minimum=1,
+     *             minimum=0,
      *             default=0
      *         )
      *     ),
@@ -78,7 +78,7 @@ class TaskController extends Controller
             'sort_by' => 'in:completed,created_at,updated_at',
             'order_by' => 'in:asc,desc',
             'limit' => 'integer|min:1|max:100',
-            'offset' => 'integer|min:1|max:100',
+            'offset' => 'integer|min:0|max:100',
         ]);
         $sorted = $request->query('sort_by') ?? 'completed';
         $ordered = $request->query('asc') ?? 'asc';
