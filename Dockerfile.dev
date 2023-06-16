@@ -3,12 +3,6 @@ FROM webdevops/php:8.2-alpine
 RUN apk add oniguruma-dev postgresql-dev libxml2-dev
 RUN docker-php-ext-install bcmath ctype fileinfo mbstring pdo_pgsql xml
 
-ENV WEB_DOCUMENT_ROOT /app/public
-WORKDIR /app
-COPY . .
-
-RUN composer install --no-interaction --optimize-autoloader --no-dev
-RUN php artisan storage:link
-RUN php artisan l5-swagger:generate
+WORKDIR /var/www/html
 
 RUN chown -R application:application .

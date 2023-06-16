@@ -23,7 +23,7 @@ services:
             POSTGRES_USER: '${DB_USERNAME}'
             POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
         volumes:
-            - 'john-task-list-pgsql:/var/lib/postgresql/data'
+            - 'pgsql:/var/lib/postgresql/data'
             - './create-testing-database.sql:/docker-entrypoint-initdb.d/create-testing-database.sql'
         networks:
             - john-task-list
@@ -35,5 +35,5 @@ networks:
     john-task-list:
         driver: bridge
 volumes:
-    john-task-list-pgsql:
+    pgsql:
         driver: local
