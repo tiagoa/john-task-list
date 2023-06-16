@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Task;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -30,6 +31,18 @@ class TaskTest extends TestCase
         $response = $this->getJson('api/tasks');
         $response->assertOk();
         $response->assertJson(fn (AssertableJson $json) => $json->count(3));
+
+        $tasks = Task::factory()
+            ->count(30)
+            ->create();
+        $response = $this->getJson('api/tasks');
+        $response->assertOk();
+        $response->assertJson(fn (AssertableJson $json) => $json->count(10));
+
+        $tasks[0]->completed = date('Y-m-d H:i:s');
+        $tasks[0]->save();
+        $response_sorted = $this->getJson('api/tasks?order_by=desc');
+        $this->assertNotEquals($response->json(0)['id'], $response_sorted->json(0)['id']);
     }
 
     private function create()

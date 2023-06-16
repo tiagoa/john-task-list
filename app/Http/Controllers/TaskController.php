@@ -6,6 +6,7 @@ use App\Http\Requests\TaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class TaskController extends Controller
@@ -17,6 +18,50 @@ class TaskController extends Controller
      *      description="Get al tasks",
      *      tags={"Tasks"},
      *      security={{"Bearer":{}}},
+     *      @OA\Parameter(
+     *         name="sort_by",
+     *         in="query",
+     *         description="Field to sort to",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *              enum={"completed","created_at","updated_at"}
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="order_by",
+     *         in="query",
+     *         description="Sorting direction",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *              enum={"asc","desc"}
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         description="How many tasks to retrieve",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *             maximum=100,
+     *             minimum=1,
+     *             default=10,
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         description="Task count to start retrieving from",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer",
+     *             maximum=100,
+     *             minimum=1,
+     *             default=0
+     *         )
+     *     ),
      *      @OA\Response(
      *          response=200,
      *          description="Task list",
@@ -27,9 +72,22 @@ class TaskController extends Controller
      *      )
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = Task::orderBy('completed', 'asc')->get();
+        $request->validate([
+            'sort_by' => 'in:completed,created_at,updated_at',
+            'order_by' => 'in:asc,desc',
+            'limit' => 'integer|min:1|max:100',
+            'offset' => 'integer|min:1|max:100',
+        ]);
+        $sorted = $request->query('sort_by') ?? 'completed';
+        $ordered = $request->query('asc') ?? 'asc';
+        $offset = $request->query('offset') ?? 0;
+        $limit = $request->query('limit') ?? 10;
+        $tasks = Task::orderBy($sorted, $ordered)
+            ->offset($offset)
+            ->limit($limit)
+            ->get();
         return response()->json($tasks);
     }
 
@@ -74,6 +132,21 @@ class TaskController extends Controller
      *          )
      *      },
      * )
+     * @OA\Schema(
+     *     schema="task_attachment",
+     *     @OA\Property(
+     *         description="Task data",
+     *         property="data",
+     *         type="string",
+     *         example="{""title"":""Task title"", ""description"":""Task description""}"
+     *     ),
+     *     @OA\Property(
+     *         description="Attachments",
+     *         property="attachments[]",
+     *         type="array",
+     *         @OA\Items(type="string", format="binary")
+     *     )
+     * ),
      * @OA\Post(
      *      path="/tasks",
      *      tags={"Tasks"},
@@ -90,17 +163,7 @@ class TaskController extends Controller
      *          @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
-     *                 @OA\Property(
-     *                     description="Task data",
-     *                     property="data",
-     *                     type="string",
-     *                 ),
-     *                 @OA\Property(
-     *                     description="Attachments",
-     *                     property="attachments[]",
-     *                     type="array",
-     *                     @OA\Items(type="string", format="binary")
-     *                 )
+     *                 allOf={@OA\Schema(ref="#/components/schemas/task_attachment")}
      *             )
      *         )
      *     ),
@@ -130,8 +193,8 @@ class TaskController extends Controller
      *      in="path",
      *      name="id",
      *      required=true,
+     *     example="0006faf6-7a61-426c-9034-579f2cfcfa83",
      *      @OA\Schema(type="string"),
-     *      @OA\Examples(example="uuid", value="0006faf6-7a61-426c-9034-579f2cfcfa83", summary="Task ID")
      * ),
      * @OA\Get(
      *      path="/tasks/{id}",
@@ -183,17 +246,7 @@ class TaskController extends Controller
      *          @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
-     *                 @OA\Property(
-     *                     description="Task data",
-     *                     property="data",
-     *                     type="string",
-     *                 ),
-     *                 @OA\Property(
-     *                     description="Attachments",
-     *                     property="attachments[]",
-     *                     type="array",
-     *                     @OA\Items(type="string", format="binary")
-     *                 )
+     *                 allOf={@OA\Schema(ref="#/components/schemas/task_attachment")}
      *             )
      *         )
      *      ),
