@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use OpenApi\Attributes as OA;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,23 +9,30 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    #[OA\Post(
-        path: '/register',
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                properties: [
-
-                ]
-            )
-        ),
-        responses: [
-            new OA\Response(
-                response: '200',
-                description: 'The data'
-            )
-        ]
-    )]
+    /**
+     * @OA\Post(
+     *      path="/register",
+     *      tags={"User"},
+     *      summary="Create user",
+     *      description="Create a new user",
+     *      @OA\RequestBody(
+     *          @OA\JsonContent(
+     *              required={"name", "email", "password"},
+     *              @OA\Property(property="name", type="string", format="text", example="John Galt"),
+     *              @OA\Property(property="email", type="email", format="text", example="john.galt@gmail.com"),
+     *              @OA\Property(property="password", type="string", format="text", example="My53cCre7P45Sw0rd"),
+     *          ),
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="User register",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="access_token", type="string", example="1|ALrz0GZtqRLde6KlVjmWaKh1Ivn8W8WXHH3tlRIU"),
+     *              @OA\Property(property="token_type", type="string", example="Bearer"),
+     *          ),
+     *     ),
+     * )
+     */
     public function register(Request $request)
     {
         $validatedData = $request->validate([
@@ -49,6 +55,29 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *      path="/login",
+     *      summary="Login",
+     *      description="Login user",
+     *      tags={"User"},
+     *      @OA\RequestBody(
+     *          @OA\JsonContent(
+     *              required={"email", "password"},
+     *              @OA\Property(property="email", type="email", format="text", example="john.galt@gmail.com"),
+     *              @OA\Property(property="password", type="string", format="text", example="My53cCre7P45Sw0rd"),
+     *          ),
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="User login",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="access_token", type="string", example="3|QKIpnPo1KbBuKly4kAt23vrHHBRo7aQM38SS6A57"),
+     *              @OA\Property(property="token_type", type="string", example="Bearer"),
+     *          ),
+     *     ),
+     * )
+     */
     public function login(Request $request)
     {
         if (!Auth::attempt($request->only('email', 'password'))) {

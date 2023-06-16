@@ -14,3 +14,7 @@ docker-compose up -d
 ```bash
 ./vendor/bin/sail artisan test
 ```
+
+## API docs:
+
+http://3.238.18.132/api/docs
