@@ -11,6 +11,7 @@ docker-compose up -d
 
 ```bash
 docker-compose exec laravel php artisan migrate
+docker-compose exec laravel php artisan storage:link
 ```
 
 ## Running tests

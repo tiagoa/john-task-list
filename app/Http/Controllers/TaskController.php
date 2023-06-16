@@ -220,15 +220,25 @@ class TaskController extends Controller
     }
 
     /**
-     * @OA\Put(
+     * @OA\POST(
      *      path="/tasks/{id}",
-     *      summary="Update a task",
-     *      description="Update task details",
+     *      summary="Update a task (PUT)",
+     *      description="Update task details (PUT)",
      *      tags={"Tasks"},
      *      security={{"Bearer":{}}},
      *      @OA\Parameter(
      *          ref="#/components/parameters/id"
      *      ),
+     *     @OA\Parameter(
+     *         name="_method",
+     *         in="query",
+     *         description="Force PUT",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             const="PUT"
+     *         )
+     *     ),
      *      @OA\RequestBody(
      *         @OA\MediaType(
      *              mediaType="application/json",
@@ -271,7 +281,8 @@ class TaskController extends Controller
         }
         $new_attachments = $this->upload($request);
         if (is_array($task->attachments)) {
-            $task->attachments = array_merge($task->attachments, $new_attachments);
+            $merged = array_merge($task->attachments, $new_attachments);
+            $task->attachments = $merged;
             if (isset($new_task['del_attachments'])) {
                 $remaining = $task->attachments;
                 foreach ($new_task['del_attachments'] as $del) {
