@@ -282,7 +282,7 @@ class TaskController extends Controller
         $new_attachments = $this->upload($request);
         if (is_array($task->attachments)) {
             $merged = array_merge($task->attachments, $new_attachments);
-            $task->attachments = $merged;
+            $task->attachments = array_values($merged);
             if (isset($new_task['del_attachments'])) {
                 $remaining = $task->attachments;
                 foreach ($new_task['del_attachments'] as $del) {
@@ -292,7 +292,7 @@ class TaskController extends Controller
                         unset($remaining[$key]);
                     }
                 }
-                $task->attachments = $remaining;
+                $task->attachments = array_values($remaining);
             }
         } else {
             $task->attachments = $new_attachments;

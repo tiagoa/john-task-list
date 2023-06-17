@@ -12,6 +12,7 @@ docker-compose up -d
 ```bash
 docker-compose exec laravel php artisan migrate
 docker-compose exec laravel php artisan storage:link
+docker-compose exec laravel php artisan key:generate
 ```
 
 ## Running tests
@@ -35,7 +36,7 @@ This project's Docker image can be found at: https://hub.docker.com/r/tiagoa/joh
 ### Deployment instructions
 Clean the application
 ```bash
-cp .env.example .env.production
+cp .env .env.production
 docker-compose exec laravel php artisan cache:clear
 rm -rf vendor
 ```
