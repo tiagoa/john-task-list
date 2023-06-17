@@ -35,6 +35,7 @@ This project's Docker image can be found at: https://hub.docker.com/r/tiagoa/joh
 ### Deployment instructions
 Clean the application
 ```bash
+cp .env.example .env.production
 docker-compose exec laravel php artisan cache:clear
 rm -rf vendor
 ```
